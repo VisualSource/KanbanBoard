@@ -1,0 +1,53 @@
+﻿@attribute [StreamRendering]
+@using Microsoft.EntityFrameworkCore
+@using DB.Service;
+@inject IDbContextFactory<ApplicationDbContext> ApplicationDbContextFactory;
+@inject ILogger<NavMenu> Logger
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">KanbanBoard</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column">
+
+        @if(links != null) {
+            @foreach(var link in links){
+                 <div class="nav-item px-3">
+                    <NavLink class="nav-link" href=@link.GetRoute>
+                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> @link.Title
+                    </NavLink>
+                </div>
+            }
+        } else {
+            <span>Loading Boards</span>
+        }
+    </nav>
+
+    <div>
+        <span>L</span>
+        <input type="checkbox"/>
+        <span>D</span>
+    </div>
+    <button>Hide Sidebar</button>
+</div>
+
+
+@code {
+    private ApplicationDbContext? context;
+    private List<DB.Tables.Board>? links;
+
+    protected override async Task OnInitializedAsync(){
+        context ??= await ApplicationDbContextFactory.CreateDbContextAsync();
+
+        if(context is not null) {
+            links = await context.Boards.ToListAsync();
+        }
+ 
+        if (context is not null) await context.DisposeAsync();
+    }
+}

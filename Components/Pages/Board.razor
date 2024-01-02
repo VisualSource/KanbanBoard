@@ -1,0 +1,182 @@
+@page "/board/{id:guid}"
+@using System.ComponentModel.DataAnnotations;
+@using Microsoft.EntityFrameworkCore
+@using DB.Service;
+@attribute [StreamRendering]
+@inject ILogger<Board> Logger
+@inject IDbContextFactory<ApplicationDbContext> ApplicationDbContextFactory;
+
+<PageTitle>Loading Board</PageTitle>
+
+ <header class="top-row px-4">
+           @if(board != null) {
+             <h2>@board.Title</h2>
+           } else {
+            <h2>Loading Board</h2>
+           }
+
+            <div>
+                <button onclick="document.getElementById('add-task-dialog').showModal()">Add Task</button>
+                <button>:</button>
+            </div>
+        </header>
+
+<dialog id="add-task-dialog">
+     <p>Greetings, one and all!</p>
+    <form method="post" @onsubmit="Submit" @formname="add-task">
+        <AntiforgeryToken />
+       <input type="hidden" name="Model.Type" value="task"/>
+        <InputText DisplayName="Title" @bind-Value="Model!.Title"/>
+        <InputTextArea @bind-Value="Model!.Description"/>
+
+        <InputSelect @bind-Value="Model!.Owner">
+            @if(board != null) {
+                @foreach(var status in board.Statuses) {
+                    <option value="@status.Id">@status.Title</option>
+                }
+            } else {
+                <option disabled>Loading</option>
+            }
+        </InputSelect>
+        <button value="cancel" formmethod="dialog">Cancel</button>
+        <button type="submit">OK</button>
+    </form>
+</dialog>
+
+<dialog id="add-column-dialog">
+     <p>Add New Column</p>
+    <form method="post" @onsubmit="Submit" @formname="add-column">
+        <AntiforgeryToken />
+        <input type="hidden" name="Model.Type" value="column"/>
+        <InputText DisplayName="Title" @bind-Value="Model!.Title"/>
+        <InputText type="color" DisplayName="Color" @bind-Value="Model!.Color"/>
+
+        <button value="cancel" formmethod="dialog">Cancel</button>
+        <button type="submit">OK</button>
+    </form>
+</dialog>
+
+<div class="content px-4">
+
+    @if(board != null) {
+        @foreach(var status in board.Statuses) {
+            <section id="@status.Id.ToString()">
+                <div>
+                    <div style="background-color: @status.Color; height: 10px; width: 10px;"></div>
+                    <h4>@status.Title (@status.Tasks.Count())</h4>
+                </div>
+                <ul>
+                    @foreach(var card in status.Tasks) {
+                        <li card-id="@card.Id.ToString()">
+                            <h6>@card.Title</h6>
+                            <p>@card.Description</p>
+                        </li>
+                    }
+                </ul>
+            </section>
+        }        
+    } else {
+        <section>Sekeletons</section>
+    }
+
+    <button onclick="document.getElementById('add-column-dialog').showModal()">Add Status</button>
+</div>
+
+@code {
+    private ApplicationDbContext? context;
+
+
+    [SupplyParameterFromForm]
+    public FormModel? Model { get; set; }
+
+    [Parameter]
+    public System.Guid? Id { get; set; }
+    private DB.Tables.Board? board;
+
+    private void Submit(){
+        if(Model is null || board is null) return;
+        Logger.LogInformation("Type = {Type}", Model?.Type);
+
+        var result = Task.Run(async ()=>{
+            using var ctx = await ApplicationDbContextFactory.CreateDbContextAsync();
+            if(Model?.Title is null || Model.Color is null) return;
+
+            Logger.LogInformation("Title = {Title}, Color = {Color}", Model.Title, Model.Color);
+
+            await ctx.Status.AddAsync(new DB.Tables.Status {
+                Id = new Guid(),
+                BoardId = board.Id,
+                Title = Model.Title,
+                Color = Model.Color
+            });
+
+            await ctx.SaveChangesAsync();
+        });
+
+        result.Wait();
+
+
+       /* var result = Task.Run(async () => {
+            using var ctx = await ApplicationDbContextFactory.CreateDbContextAsync();
+            Logger.LogInformation("Type = {Type}", Model?.Type);
+
+            switch(Model!.Type) {
+                case "task": {
+                    if(Model.Title is null || Model.Description is null || Model.Owner is null) break;
+
+                    await ctx.Tasks.AddAsync(new DB.Tables.Task {
+                        Id = new Guid(),
+                        StatusId = new Guid(Model.Owner),
+                        Title = Model.Title,
+                        Description = Model.Description
+                    });
+                    await ctx.SaveChangesAsync();
+
+                    break;
+                }
+                case "column": {
+                    if(Model.Title is null || Model.Color is null) break;
+
+                    await ctx.Status.AddAsync(new DB.Tables.Status {
+                        Id = new Guid(),
+                        BoardId = board.Id,
+                        Color = Model.Color,
+                        Title = Model.Title,                    
+                    });
+                    await ctx.SaveChangesAsync();
+
+                    break;
+                }
+                default: 
+                    break;
+            }       
+        });
+
+        result.Wait();*/    
+    }
+
+    public class FormModel {
+        public String? Title { get; set; }
+        public String? Description { get; set; }
+
+        public String? Color { get; set; }
+
+        [Required]
+        public String? Type { get; set; }
+
+        public String? Owner { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        Model ??= new();
+    }
+    protected override async Task OnInitializedAsync(){
+        using var ctx = await ApplicationDbContextFactory.CreateDbContextAsync();
+        Logger.LogInformation("Loading Board Content");
+        board = await ctx.Boards.FindAsync(Id);
+
+        if(board is not null) Logger.LogInformation("Count: {Count}", board.Statuses.Count());
+    
+    }
+}
