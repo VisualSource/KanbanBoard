@@ -1,0 +1,59 @@
+@page "/board/{id:guid}"
+@using System.ComponentModel.DataAnnotations;
+@using Microsoft.EntityFrameworkCore
+@using DB.Service;
+@using BoardComponent;
+@attribute [StreamRendering]
+@inject ILogger<Board> Logger
+@inject BoardService BoardService;
+@inject NavigationManager Navigation;
+
+@if(board != null){
+    <PageTitle>@board.Title</PageTitle>
+} else {
+    <PageTitle>Loading Board</PageTitle>
+}
+
+
+    <header class="px-4 justify-between w-full border-b h-20 items-center sm:sticky md:flex bg-gray-500">
+        @if(board != null) {
+            <h1 class="text-3xl">@board.Title</h1>
+        } else {
+            <h1>Loading Board</h1>
+        }
+
+        <div>
+            <button onclick="document.getElementById('add-task-dialog').showModal()">Add Task</button>
+            <button>:</button>
+        </div>
+    </header>
+
+    <div class="px-8 py-2 flex gap-6 h-full w-full overflow-scroll">
+
+        @if(board != null) {
+            @foreach(var status in board.Statuses) {
+                <section id="@status.Id.ToString()">
+                    <BoardColumn Status=@status/>
+                </section>
+            }        
+        } else {
+            <section>Sekeletons</section>
+        }
+
+        <button class="shadow hover:shadow-lg w-96 min-w-96" onclick="document.getElementById('add-column-dialog').showModal()">+New Column</button>
+    </div>
+@code {
+    [Parameter]
+    public System.Guid? Id { get; set; }
+    private DB.Tables.Board? board;
+
+    protected override async Task OnInitializedAsync(){
+        if(Id is null) {
+            Navigation.NavigateTo("");
+            return;
+        }
+
+        board = await BoardService.GetBoard(Id.Value);
+    }
+
+}

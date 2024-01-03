@@ -1,0 +1,36 @@
+@using System.ComponentModel.DataAnnotations;
+@using Microsoft.EntityFrameworkCore;
+@attribute [StreamRendering]
+@using DB.Service;
+@inject ILogger<BoardColumn> Logger
+@inject IDbContextFactory<ApplicationDbContext> ApplicationDbContextFactory;
+@namespace BoardComponent
+
+<div class="flex gap-2 items-center pb-4">
+    <div style="background-color: @Status.Color;" class="h-4 w-4 rounded-full"></div>
+    <h4 class="font-bold uppercase tracking-tight">@Status.Title (@if(Status.Tasks != null) {@Status.Tasks.Count()} else {})</h4>
+</div>
+
+@if(Status.Tasks != null) {
+    <ul class="space-y-4 w-72">
+        @foreach(var card in Status.Tasks) {
+            <li card-id="@card.Id.ToString()" class="p-4 shadow rounded-sm bg-gray-100" draggable="true">
+                <h6 class="font-bold text-md">@card.Title</h6>
+                <p class="line-clamp-2 text-sm text-gray-600">@card.Description</p>
+            </li>
+        }
+    </ul>
+} else {
+    <div>Loading Tasks</div>
+}
+
+@code {
+
+    [Parameter]
+    public DB.Tables.Status Status { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
+}

@@ -1,22 +1,21 @@
 using KanbanBoard.Components;
 using DB.Service;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-
+using System.Runtime.Serialization;
 var builder = WebApplication.CreateBuilder(args);
-
-var connnectionString = builder.Configuration.GetConnectionString("SqliteDB");
-builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddDbContextFactory<ApplicationDbContext>(opts => opts.UseSqlite(connnectionString));
+builder.Services.AddControllers();
+
+builder.Services.AddDbContextFactory<ApplicationDbContext>(opts => ApplicationDbContext.BuildConnection(opts, builder.Configuration));
+builder.Services.AddDbContext<ApplicationDbContext>(opts => ApplicationDbContext.BuildConnection(opts, builder.Configuration));
+builder.Services.AddHttpClient();
+
+builder.Services.AddSingleton<BoardService>();
 
 var app = builder.Build();
-
-ApplicationDbContext.BuildModels();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -26,6 +25,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.MapBlazorHub();
+app.MapControllers();
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();

@@ -1,8 +1,8 @@
 ﻿@attribute [StreamRendering]
 @using Microsoft.EntityFrameworkCore
 @using DB.Service;
-@inject IDbContextFactory<ApplicationDbContext> ApplicationDbContextFactory;
 @inject ILogger<NavMenu> Logger
+@inject BoardService BoardService;
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -38,16 +38,9 @@
 
 
 @code {
-    private ApplicationDbContext? context;
-    private List<DB.Tables.Board>? links;
+    private DB.Tables.Board[]? links;
 
     protected override async Task OnInitializedAsync(){
-        context ??= await ApplicationDbContextFactory.CreateDbContextAsync();
-
-        if(context is not null) {
-            links = await context.Boards.ToListAsync();
-        }
- 
-        if (context is not null) await context.DisposeAsync();
+        links = await BoardService.GetBoards();
     }
 }

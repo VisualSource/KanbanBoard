@@ -1,27 +1,28 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.ObjectPool;
 
 namespace DB.Service;
 
 public class ApplicationDbContext : DbContext
 {
-    public static void BuildModels()
+    public static DbContextOptionsBuilder BuildConnection(DbContextOptionsBuilder opts, IConfiguration config)
     {
-        var conn = new ConfigurationBuilder();
-
-        var config = conn.Build();
-
-        using var ctx = new ApplicationDbContext(config);
-
-        Console.WriteLine(ctx.Model.ToDebugString(indent: 2));
+        var connectionStr = config.GetConnectionString("MySql");
+        return opts.UseMySql(
+            connectionStr,
+            ServerVersion.AutoDetect(
+               connectionStr
+            )
+        ).EnableDetailedErrors();
     }
     protected readonly IConfiguration Configuration;
-
     public ApplicationDbContext(IConfiguration configuration)
     {
         Configuration = configuration;
     }
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlite(Configuration.GetConnectionString("SqliteDB"));
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        BuildConnection(optionsBuilder, Configuration);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -30,6 +31,7 @@ public class ApplicationDbContext : DbContext
         .WithOne(e => e.Board)
         .HasForeignKey(e => e.BoardId)
         .IsRequired();
+
         modelBuilder.Entity<Tables.Status>()
         .HasMany(e => e.Tasks)
         .WithOne(e => e.Status)
@@ -50,9 +52,12 @@ public class ApplicationDbContext : DbContext
                 Id = new Guid("5f35a7cb-b73b-411e-a27e-0f5ad6632361"),
                 Title = "Roadmap"
             });
+
+        // Console.WriteLine("Creating Model");
+        // Console.WriteLine(modelBuilder.Model.ToDebugString(indent: 2));
     }
 
-    public DbSet<Tables.Board> Boards => Set<Tables.Board>();
-    public DbSet<Tables.Task> Tasks => Set<Tables.Task>();
-    public DbSet<Tables.Status> Status => Set<Tables.Status>();
+    public DbSet<Tables.Board> Boards { get; set; }
+    public DbSet<Tables.Task> Tasks { get; set; }
+    public DbSet<Tables.Status> Status { get; set; }
 }
