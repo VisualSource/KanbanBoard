@@ -6,17 +6,19 @@
 @inject IDbContextFactory<ApplicationDbContext> ApplicationDbContextFactory;
 @namespace BoardComponent
 
-<div class="flex gap-2 items-center pb-4">
+<div class="flex gap-2 items-center py-4">
     <div style="background-color: @Status.Color;" class="h-4 w-4 rounded-full"></div>
-    <h4 class="font-bold uppercase tracking-tight">@Status.Title (@if(Status.Tasks != null) {@Status.Tasks.Count()} else {})</h4>
+    <h4 class="scroll-m-20 text-sm font-semibold tracking-tight uppercase">@Status.Title (@if(Status.Tasks != null) {@Status.Tasks.Count()} else {})</h4>
 </div>
 
 @if(Status.Tasks != null) {
     <ul class="space-y-4 w-72">
         @foreach(var card in Status.Tasks) {
-            <li card-id="@card.Id.ToString()" class="p-4 shadow rounded-sm bg-gray-100" draggable="true">
-                <h6 class="font-bold text-md">@card.Title</h6>
-                <p class="line-clamp-2 text-sm text-gray-600">@card.Description</p>
+            <li card-id="@card.Id.ToString()" class="rounded-lg border bg-card text-card-foreground shadow-sm" draggable="true">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">@card.Title</h3>
+                    <p class="text-sm text-muted-foreground">@card.Description</p>
+                </div>
             </li>
         }
     </ul>

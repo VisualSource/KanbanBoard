@@ -1,19 +1,14 @@
 using KanbanBoard.Components;
 using DB.Service;
-using System.Runtime.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
-
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddControllers();
-
 builder.Services.AddDbContextFactory<ApplicationDbContext>(opts => ApplicationDbContext.BuildConnection(opts, builder.Configuration));
 builder.Services.AddDbContext<ApplicationDbContext>(opts => ApplicationDbContext.BuildConnection(opts, builder.Configuration));
 builder.Services.AddHttpClient();
-
-builder.Services.AddSingleton<BoardService>();
+builder.Services.AddSingleton<BoardService>().AddSingleton<StatusService>();
 
 var app = builder.Build();
 
@@ -25,10 +20,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.MapBlazorHub();
 app.MapControllers();
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseAntiforgery();
 

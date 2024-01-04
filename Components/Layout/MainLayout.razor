@@ -1,11 +1,11 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="h-full flex">
-    <div class="sidebar col-span-2" data-permanent>
+    <div class="sidebar col-span-2 sm:w-64 sm:h-screen sm:sticky sm:top-0 border-r border-accent bg-secondary" data-permanent>
         <NavMenu />
     </div>
 
-    <main class="flex flex-col overflow-hidden">
+    <main class="flex flex-1 flex-col overflow-hidden">
         @Body
     </main>
 </div>

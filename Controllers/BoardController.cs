@@ -22,7 +22,6 @@ public class BoardsController : ControllerBase
         return await Ctx.Boards.ToListAsync();
     }
 
-    [Produces("application/json")]
     [HttpGet("{id:guid}")]
     public async Task<DB.Tables.Board> GetBoard(Guid Id)
     {

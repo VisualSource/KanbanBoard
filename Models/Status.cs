@@ -14,5 +14,6 @@ public class Status
     [JsonIgnore]
     public Board Board { get; init; } = null!;
 
+
     public ICollection<Task> Tasks { get; set; } = new List<Task>();
 }

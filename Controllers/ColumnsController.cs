@@ -1,30 +1,45 @@
+using System.Text;
 using DB.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
+public class CreateColumnModel
+{
+    public required String Title;
+    public required String Descrption;
+    public required String StatusId;
+}
+
 [ApiController]
 [Route("api/columns")]
 public class ColumnsController : ControllerBase
 {
-    private readonly ILogger<ColumnsController> Logger;
     private readonly ApplicationDbContext Ctx;
 
-    public ColumnsController(ILogger<ColumnsController> logger, ApplicationDbContext ctx)
+    public ColumnsController(ApplicationDbContext ctx)
     {
-        Logger = logger;
         Ctx = ctx;
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<List<DB.Tables.Status>> GetColumns(Guid id)
+    public async Task<String> GetColumns(Guid id)
     {
-        return await Ctx.Status.Where(e => e.BoardId == id).ToListAsync();
+        var results = await Ctx.Status.Where(e => e.BoardId == id).ToListAsync();
+
+        var result = new StringBuilder();
+
+        results.ForEach(e =>
+        {
+            result.Append($"<option value=\"{e.Id}\">{e.Title}</options>");
+        });
+
+        return result.ToString();
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateColumn([FromBody] DB.Tables.Status status)
+    public async Task<IActionResult> CreateColumn([FromBody] CreateColumnModel status)
     {
 
         return Created();

@@ -1,6 +1,4 @@
-@inject ILogger<AddColumnDialog> Logger
 @namespace BoardComponent
-@rendermode InteractiveServer
 
 <dialog id="add-column-dialog">
      <p>Add New Column</p>
@@ -11,12 +9,12 @@
         <input type="color"/>
 
         <button value="cancel" formmethod="dialog">Cancel</button>
-        <button @onclick="AddColumn">OK</button>
+        <button>OK</button>
     </div>
 </dialog>
 
+<button class="rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-md w-96 min-w-96" onclick="document.getElementById('add-task-dialog').showModal()">+New Column</button>
+
 @code {
-    private void AddColumn(){
-        Logger.LogInformation("Hello From Dialog");
-    }
+
 }

@@ -4,17 +4,17 @@
 @inject ILogger<NavMenu> Logger
 @inject BoardService BoardService;
 
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">KanbanBoard</a>
+<div class="top-row ps-3 navbar h-20">
+    <div class="flex items-center h-full">
+        <a class="scroll-m-20 text-3xl font-semibold tracking-tight" href="">KanbanBoard</a>
     </div>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+<input type="checkbox" title="Navigation menu" class="navbar-toggler appearance-none cursor-pointer w-14 h-10 absolute top-2 right-4" />
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-
+<div class="nav-scrollable flex flex-col justify-between h-full" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column space-y-2 container">
+        <h4 class="uppercase text-muted-foreground text-sm">All Boards (@links?.Count())</h4>
         @if(links != null) {
             @foreach(var link in links){
                  <div class="nav-item px-3">
@@ -27,13 +27,14 @@
             <span>Loading Boards</span>
         }
     </nav>
-
     <div>
-        <span>L</span>
-        <input type="checkbox"/>
-        <span>D</span>
+         <div class="flex">
+            <span>L</span>
+            <input type="checkbox" onchange="document.body.classList.toggle('dark')"/>
+            <span>D</span>
+        </div>
+        <button>Hide Sidebar</button>
     </div>
-    <button>Hide Sidebar</button>
 </div>
 
 
