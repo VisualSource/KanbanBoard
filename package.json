@@ -1,0 +1,16 @@
+{
+  "name": "kanban-board-mvc",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "pnpm tailwindcss -i ./src/css/site.css -o ./wwwroot/css/site.css",
+    "build": "pnpm tailwindcss -i ./src/css/site.css -o ./wwwroot/css/site.css --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "tailwindcss-animate": "^1.0.7"
+  }
+}
