@@ -51,7 +51,6 @@
     private BoardColumn Ref {
         set => Refs.Add(value);
     }
-
     protected override async Task OnInitializedAsync(){
         if(Id is null) {
             Navigation.NavigateTo("");

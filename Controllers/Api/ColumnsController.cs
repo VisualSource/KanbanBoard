@@ -3,7 +3,7 @@ using DB.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Controllers;
+namespace API;
 
 public class CreateColumnModel
 {

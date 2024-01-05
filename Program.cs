@@ -1,31 +1,27 @@
-using KanbanBoard.Components;
 using DB.Service;
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddRazorComponents().AddInteractiveServerComponents();
-builder.Services.AddControllers();
-builder.Services.AddDbContextFactory<ApplicationDbContext>(opts => ApplicationDbContext.BuildConnection(opts, builder.Configuration));
+
+builder.Services.AddControllersWithViews();
+
 builder.Services.AddDbContext<ApplicationDbContext>(opts => ApplicationDbContext.BuildConnection(opts, builder.Configuration));
-builder.Services.AddHttpClient();
-builder.Services.AddSingleton<BoardService>().AddSingleton<StatusService>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
-app.MapControllers();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseAntiforgery();
+app.UseRouting();
 
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+app.UseAuthorization();
+
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

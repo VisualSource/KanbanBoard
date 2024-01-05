@@ -2,7 +2,7 @@ using DB.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Controllers;
+namespace API;
 
 [ApiController]
 [Route("api/boards")]
