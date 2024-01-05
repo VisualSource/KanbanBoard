@@ -39,4 +39,19 @@ public class ApiBoardsControllers : Controller
 
         return View("~/Views/Api/Routes.cshtml", boards);
     }
+
+    [HttpDelete]
+    public async Task<IActionResult> DeleteBoard([FromQuery] Guid Id)
+    {
+
+        var board = await _context.Boards.SingleOrDefaultAsync(e => e.Id == Id);
+
+        if (board is null) return NotFound();
+
+        _context.Entry(board).State = EntityState.Deleted;
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }

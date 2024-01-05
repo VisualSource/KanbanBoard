@@ -30,4 +30,17 @@ public class ApiColumnControllers : Controller
 
         return View("~/Views/Api/Column.cshtml", Model);
     }
+
+    [HttpDelete]
+    public async Task<IActionResult> DeleteColumn([FromQuery] Guid Id)
+    {
+        var column = await _context.Status.SingleOrDefaultAsync(e => e.Id == Id);
+        if (column is null) return NotFound();
+
+        _context.Entry(column).State = EntityState.Deleted;
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }

@@ -1,0 +1,29 @@
+@model KanbanBoardMvc.Models.TaskModel;
+@{
+    Layout = "_EmptyLayout";
+}
+
+<div class="flex flex-col space-y-1.5 text-center sm:text-left mb-2">
+    <h1 class="text-lg font-semibold leading-none tracking-tight">Edit Model</h1>
+</div>
+
+<div class="flex flex-col space-y-2">
+    <input hidden name="Id" value="@Model.Id"/>
+    <div>
+        <label for="taske-props-title" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Task Title</label>
+        <input id="taske-props-title" value="@Html.DisplayFor(e=>e.Title)" hx-validate required placeholder="e.g Take a coffee break" name="Title" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" id="task-props-title" type="text"/>
+    </div>
+    <div>
+        <label for="taske-props-description" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Task Description</label>
+        <textarea id="taske-props-description" hx-validate placeholder="e.g it's always good to take a break. This 15 minute break will recharge the batteries a little." name="Description" rows="4" cols="50" class="flex h-28 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" id="task-props-description">@Html.DisplayFor(e=>e.Description)</textarea>
+    </div>
+    <div>
+        <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Subtasks</label>
+        <ul></ul>
+        <button type="button" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 h-9 px-4 py-2 w-full">Add Subtask</button>
+    </div>
+</div>
+
+ <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 mt-2">
+     <button hx-indicator="#ivd-indicator" hx-target-5="#ivd-server-error" hx-target-4="#ivd-client-error" hx-target="#column-id-@Model.StatusId" hx-patch="/api/tasks" hx-on::after-request="document.getElementById('item-view-dialog').close();" hx-trigger="click" type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2">Save</button>
+ </div>
