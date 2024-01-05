@@ -1,0 +1,12 @@
+@model  IEnumerable<KanbanBoardMvc.Models.BoardModel>;
+@{
+    Layout = "_EmptyLayout";
+}
+<h4 class="uppercase text-muted-foreground text-sm">All Boards (@Model.Count())</h4>
+
+@foreach(var item in Model){
+    <a class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 w-full" href='/boards/@item.Id'>
+        <span class='' aria-hidden='true'></span>
+        @Html.DisplayFor(i=>item.Title)
+    </a>
+}

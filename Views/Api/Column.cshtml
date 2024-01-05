@@ -1,0 +1,21 @@
+@model KanbanBoardMvc.Models.StatusModel;
+@{
+    Layout = "_EmptyLayout";
+}
+ 
+<section id="column-id-@Model.Id">
+    <div class="flex gap-2 items-center py-4">
+        <div style="background-color: @Model.Color;" class="h-4 w-4 rounded-full"></div>
+        <h4 class="scroll-m-20 text-sm font-semibold tracking-tight uppercase">@Html.DisplayFor(e=>e.Title) (@Model.Tasks.Count())</h4>
+    </div>
+    <ul data-group-name="task-group" class="space-y-4 w-72 sortable" class="flex flex-col">
+        @foreach(var card in @Model.Tasks) {
+            <li card-id="@card.Id.ToString()" class="rounded-lg border bg-card text-card-foreground shadow-sm" draggable="true">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">@Html.DisplayFor(e=>card.Title)</h3>
+                    <p class="text-sm text-muted-foreground">@Html.DisplayFor(e=>card.Description)</p>
+                </div>
+            </li>
+        }
+    </ul>
+</section>

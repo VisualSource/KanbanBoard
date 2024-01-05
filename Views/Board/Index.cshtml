@@ -1,0 +1,108 @@
+@model KanbanBoardMvc.Models.BoardModel;
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<dialog hx-ext="response-targets" id="add-task-dialog" class="backdrop:bg-black/80 backdrop:open:animate-in backdrop:open:fade-in-0 open:animate-in open:grid w-full max-w-lg gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg">
+    <form method="dialog">
+        <button value="cancel" formmethod="dialog" class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+            X
+        </button>
+        <div class="flex flex-col space-y-1.5 text-center sm:text-left">
+            <h1 class="text-lg font-semibold leading-none tracking-tight">Add Task</h1>
+            <p class="text-sm text-muted-foreground">Create new task</p>
+        </div>
+        <div class="flex flex-col py-4">
+           <div>
+                <label for="task-props-title" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Task Title</label>
+                <input name="Title" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" id="task-props-title" type="text"/>
+           </div>
+            <div>
+                <label for="task-props-description" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Task Description</label>
+                <textarea name="Description" rows="4" cols="50" class="flex h-28 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" id="task-props-description"></textarea>
+            </div>
+            <div>
+                <label for="task-props-column" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Column</label>
+                <select hx-on:change="document.getElementById('submit-add-task-btn').setAttribute('hx-target',`#column-id-${this.value}`)" name="StatusId" id="task-props-column" class="flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1">
+                    @foreach(var item in Model.Statuses){
+                        <option value="@item.Id">@item.Title</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div id="atd-server-error"></div>
+        <div id="atd-client-error"></div>
+        <div id="atd-indicator" class="hidden">Updating...</div>
+        <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 h-9 px-4 py-2" value="cancel" formmethod="dialog">Cancel</button>
+            <button hx-indicator="#atd-indicator" id="submit-add-task-btn" hx-target-5="#atd-server-error" hx-target-4="#atd-client-error"  hx-swap="outerHTML" hx-target="#column-id-@Model.Statuses.FirstOrDefault()?.Id" hx-post="/api/tasks" hx-on::after-request="document.getElementById('add-task-dialog').close()" hx-validate hx-trigger="click" type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2">Ok</button>
+        </div>
+    </form>
+</dialog>
+
+<dialog hx-ext="response-targets" id="add-column-dialog" class="backdrop:bg-black/80 backdrop:open:animate-in backdrop:open:fade-in-0 open:animate-in open:grid w-full max-w-lg gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg">
+     <form method="dialog">
+        <button value="cancel" formmethod="dialog" class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+            X
+        </button>
+        <div class="flex flex-col space-y-1.5 text-center sm:text-left">
+            <h1 class="text-lg font-semibold leading-none tracking-tight">Add Column</h1>
+            <p class="text-sm text-muted-foreground">Create new column</p>
+        </div>
+        <input hidden name="BoardId" value="@Model.Id"/>
+        <div class="flex flex-col py-4">
+           <div>
+                <label for="column-props-title" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Column Title</label>
+                <input name="Title" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" id="column-props-title" type="text"/>
+           </div>
+            <div>
+                <label for="column-props-description" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Column Color</label>
+                <input name="Color" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" id="column-props-color" type="color"/>
+            </div>
+        </div>
+        <div id="acd-server-error"></div>
+        <div id="acd-client-error"></div>
+        <div id="acd-indicator" class="htmx-indicator">Updating...</div>
+        <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 h-9 px-4 py-2" value="cancel" formmethod="dialog">Cancel</button>
+            <button hx-indicator="#acd-indicator" hx-target-5="#acd-server-error" hx-target-4="#acd-client-error" hx-target="#add-column-btn" hx-swap="beforebegin show:#add-column-btn:top swap:1s" hx-post="/api/columns" hx-on::after-request="document.getElementById('add-column-dialog').close()" hx-validate hx-trigger="click" type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2">Ok</button>
+        </div>
+    </form>
+</dialog>
+
+<header class="px-4 justify-between w-full border-b h-20 items-center sm:sticky md:flex bg-secondary">
+    <h1 class="scroll-m-20 text-3xl font-semibold tracking-tight">@Html.DisplayFor(e=>e.Title)</h1>
+     <div class="flex gap-2">
+        <button class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background bg-primary text-primary-foreground hover:bg-primary/90 h-10 py-2 px-4" onclick="document.getElementById('add-task-dialog').showModal()">Add Task</button>
+        <button id="board-ctrl" class="peer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 w-10">:</button>
+        <ul class="hidden peer-hover:flex absolute bg-secondary h-60 w-28">
+            <li>
+                <button>Delete Board</button>
+            </li>
+        </ul>
+    </div>
+</header>
+
+<div class="px-8 py-2 flex gap-6 h-full w-full overflow-scroll sortable">
+    @foreach(var item in Model.Statuses){
+        <section id="column-id-@item.Id" class="flex flex-col">
+            <div class="flex gap-2 items-center py-4">
+                <div style="background-color: @item.Color;" class="h-4 w-4 rounded-full"></div>
+                <h4 class="scroll-m-20 text-sm font-semibold tracking-tight uppercase">@item.Title (@item.Tasks.Count())</h4>
+            </div>
+            <ul data-group-name="task-group" class="space-y-4 w-72 sortable h-full" hx-trigger="end">
+                 @foreach(var card in @item.Tasks) {
+                    <li card-id="@card.Id.ToString()" class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                        <div class="flex flex-col space-y-1.5 p-6">
+                            <h3 class="font-semibold leading-none tracking-tight">@card.Title</h3>
+                            <p class="text-sm text-muted-foreground">@card.Description</p>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+
+    <button id="add-column-btn" class="non-sort rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-md w-96 min-w-96" onclick="document.getElementById('add-column-dialog').showModal()">+New Column</button>
+</div>
