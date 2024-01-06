@@ -98,15 +98,15 @@
     </form>
 </dialog>
 
-<header class="px-4 justify-between w-full border-b h-20 items-center sm:sticky md:flex bg-secondary">
+<header class="px-4 justify-between w-full border-b h-20 items-center sm:sticky md:flex bg-secondary z-10">
     <h1 class="scroll-m-20 text-3xl font-semibold tracking-tight">@Html.DisplayFor(e=>e.Title)</h1>
      <div class="flex gap-2">
         <button class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background bg-primary text-primary-foreground hover:bg-primary/90 h-10 py-2 px-4" onclick="document.getElementById('add-task-dialog').showModal()">Add Task</button>
-        <div class="relative inline-block">
-            <div>
-                <button hx-on:click="document.getElementById('board-dropdown').classList.toggle('hidden');" id="board-ctrl" class="peer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 w-10">:</button>
-            </div>
-            <div id="board-dropdown" hx-on:blur="this.classList.toggle('hidden');" class="absolute hidden right-0 z-10 mt-2 w-56 origin-top-right bg-background shadow-lg ring-1 ring-accent ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+        <div class="relative inline-block" is="dropdown-menu">
+            <button data-trigger class="peer -z-50 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="h-5 w-5"><path d="M10 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM10 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM11.5 15.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z"></path></svg>
+            </button>
+            <div data-content class="absolute z-50 hidden right-0 mt-2 w-56 origin-top-right bg-background shadow-lg ring-1 ring-accent ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
                 <div class="py-1" role="none">
                     <button hx-delete="/api/boards?id=@Model.Id" hx-confirm="Are you sure you wish to delete this board" hx-on::after-request="window.location.pathname = '/';" class="text-foreground block px-4 py-2 text-sm" role="menuitem" tabindex="-1">Delete Board</button>
                 </div>
@@ -117,7 +117,7 @@
 
 <div class="px-8 py-2 flex gap-6 h-full w-full overflow-scroll sortable">
     @foreach(var item in Model.Statuses){
-        <section id="column-id-@item.Id" class="flex flex-col cursor-pointer">
+        <section id="column-id-@item.Id" class="flex flex-col cursor-pointer z-0">
             <div class="flex justify-between items-center">
                 <div class="flex gap-2 items-center py-4">
                     <div style="background-color: @item.Color;" class="h-4 w-4 rounded-full"></div>
@@ -125,7 +125,12 @@
                 </div>
 
                  <div class="inline-block relative">
-                    <button type="button" hx-on:click="this.nextElementSibling.classList.toggle('hidden');" id="board-ctrl" class="peer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 w-10">:</button>
+                    <button hx-trigger="click" hx-ext="dropdown" type="button" id="board-ctrl" class="peer -z-50 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path d="M10 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM10 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM11.5 15.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z">
+                            </path>
+                        </svg>
+                    </button>
                     <div id="task-dropdown" hx-on:blur="this.classList.toggle('hidden');" class="absolute hidden right-0 z-10 mt-2 w-56 origin-top-right bg-background shadow-lg ring-1 ring-accent ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
                         <div class="py-1" role="none">
                             <button hx-delete="/api/column?id=@item.Id" hx-confirm="Are you sure you wish to delete this board" hx-on::after-request="document.getElementById('column-id-@Model.Id').remove();" class="text-foreground block px-4 py-2 text-sm" role="menuitem" tabindex="-1">Delete Column</button>

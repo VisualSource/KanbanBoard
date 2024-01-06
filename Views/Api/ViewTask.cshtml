@@ -6,12 +6,14 @@
 
 <div class="inline-block absolute right-4 top-4">
     <div>
-        <button type="button" hx-on:click="document.getElementById('task-dropdown').classList.toggle('hidden');" id="board-ctrl" class="peer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 w-10">:</button>
+        <button type="button" hx-on:click="document.getElementById('task-dropdown').classList.toggle('hidden');" id="board-ctrl" class="peer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 w-10">
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM10 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM11.5 15.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z"></path></svg>
+        </button>
     </div>
     <div id="task-dropdown" hx-on:blur="this.classList.toggle('hidden');" class="absolute hidden right-0 z-10 mt-2 w-56 origin-top-right bg-background shadow-lg ring-1 ring-accent ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
         <div class="py-1" role="none">
             <button hx-delete="/api/tasks?id=@Model.Id" hx-target="#column-id-@Model.StatusId" hx-confirm="Are you sure you wish to delete this board" hx-on::after-request="document.getElementById('item-view-dialog').close();" class="text-foreground block px-4 py-2 text-sm" role="menuitem" tabindex="-1">Delete Task</button>
-             <button hx-get="/api/tasks/edit?id=@Model.Id" hx-target="#editable-content" hx-on::after-request="document.getElementById('task-dropdown').classList.toggle('hidden');" class="text-foreground block px-4 py-2 text-sm" role="menuitem" tabindex="-1">Edit Task</button>
+            <button hx-get="/api/tasks/edit?id=@Model.Id" hx-target="#editable-content" hx-on::after-request="document.getElementById('task-dropdown').classList.toggle('hidden');" class="text-foreground block px-4 py-2 text-sm" role="menuitem" tabindex="-1">Edit Task</button>
          </div>
     </div>
 </div>
@@ -27,7 +29,7 @@
         <h6>Subtasks (0 of 1)</h6>
         <ul class="divide-y-2">
             <li class="flex items-center bg-secondary shadow-sm p-2 gap-2">
-                <button hx-on:click="this.setAttribute('data-state',this.getAttribute('data-state') === 'checked' ? 'unchecked' : 'checked');this.firstElementChild.setAttribute('data-state',this.getAttribute('data-state') === 'checked' ? 'checked': 'unchecked');this.lastElementChild.setAttribute('checked',this.getAttribute('data-state') === 'checked' ? 'true': 'false');" type="button" role="checkbox" aria-checked="true" data-state="checked" value="on" class="peer h-4 w-4 shrink-0 rounded-sm border border-primary shadow focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground">
+                <button onclick="checkToggle([this,this.firstElementChild],(state)=>this.lastElementChild.setAttribute('checked',state.toString()))" type="button" role="checkbox" aria-checked="true" data-state="checked" value="on" class="peer h-4 w-4 shrink-0 rounded-sm border border-primary shadow focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground">
                     <span data-state="checked" class="items-center justify-center text-current flex data-[state=unchecked]:hidden" style="pointer-events: none;">
                         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4">
                             <path d="M11.4669 3.72684C11.7558 3.91574 11.8369 4.30308 11.648 4.59198L7.39799 11.092C7.29783 11.2452 7.13556 11.3467 6.95402 11.3699C6.77247 11.3931 6.58989 11.3355 6.45446 11.2124L3.70446 8.71241C3.44905 8.48022 3.43023 8.08494 3.66242 7.82953C3.89461 7.57412 4.28989 7.55529 4.5453 7.78749L6.75292 9.79441L10.6018 3.90792C10.7907 3.61902 11.178 3.53795 11.4669 3.72684Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd">
