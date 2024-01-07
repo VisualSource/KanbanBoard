@@ -106,8 +106,11 @@
     </form>
 </dialog>
 
-<header class="px-4 justify-between w-full border-b h-20 items-center sm:sticky md:flex bg-secondary z-10">
-    <h1 class="scroll-m-20 text-3xl font-semibold tracking-tight">@Html.DisplayFor(e=>e.Title)</h1>
+<header class="px-4 z-20 justify-between w-full border-b h-20 items-center sm:sticky flex bg-secondary">
+    <button hx-on:click="document.getElementById('sidenav').classList.toggle('hidden')" class="sm:hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+    </button>
+    <h1 class="scroll-m-20 text-3xl font-semibold tracking-tight line-clamp-1">@Html.DisplayFor(e=>e.Title)</h1>
      <div class="flex gap-2">
         <button class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background bg-primary text-primary-foreground hover:bg-primary/90 h-10 py-2 px-4" onclick="document.getElementById('add-task-dialog').showModal()">Add Task</button>
         <div class="relative inline-block" is="dropdown-menu">
@@ -123,7 +126,7 @@
     </div>
 </header>
 <div class="hidden" id="no-swap"></div>
-<form class="px-8 py-2 flex gap-6 h-full w-full overflow-scroll sortable" hx-patch="/api/list/columns" hx-trigger="end" hx-target="#no-swap">
+<form class="px-8 py-2 flex-col md:flex-row flex gap-6 h-full w-full overflow-scroll sortable" hx-patch="/api/list/columns" hx-trigger="end" hx-target="#no-swap">
     @for(var i = 0; i < Model.Statuses.Count(); i++){
         <section id="column-id-@Model.Statuses[i].Id" class="flex flex-col cursor-pointer z-0">
             <input hidden name="Column[@i]" value="@Model.Statuses[i].Id"/>
@@ -159,5 +162,5 @@
             </ul>
         </section>
     }
-    <button type="button" id="add-column-btn" class="non-sort rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-md w-96 min-w-96" onclick="showModel('add-column-dialog')">+New Column</button>
+    <button type="button" id="add-column-btn" class="non-sort rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-md h-20 w-full md:h-full md:w-96 md:min-w-96" onclick="showModel('add-column-dialog')">+New Column</button>
 </form>

@@ -37,14 +37,14 @@
         </form>
     </dialog>
     <div class="h-full flex">
-        <div class="sm:w-64 sm:h-screen sm:sticky sm:top-0 border-r border-accent shadow" data-permanent>
-            <div class="top-row ps-3 navbar h-20">
-                <div class="flex items-center h-full">
+        <div id="sidenav" class="hidden top-0 left-0 z-50 h-full bg-background sm:bg-transparent absolute sm:block sm:w-64 sm:h-screen sm:sticky sm:top-0 border-r border-accent shadow flex flex-col" data-permanent>
+            <div class="h-20">
+                <div class="flex items-center justify-center h-full">
                     <a class="scroll-m-20 text-3xl font-semibold tracking-tight" href="/">KanbanBoard</a>
                 </div>
             </div>
-            <div id="nav-scrollable" class="hidden sm:overflow-y-auto sm:h-[calc(100vh-5rem)] sm:flex flex-col justify-between h-full">
-                <nav class="flex-column space-y-2 container">
+            <div id="nav-scrollable" class="sm:overflow-y-auto sm:h-[calc(100vh-5rem)] sm:flex flex-col justify-between h-full">
+                <nav class="flex-column space-y-2 container flex-1">
                     <div id="board-nav" class="flex flex-col gap-2" hx-trigger="load" hx-get="/api/boards">
                         <h4 class="uppercase text-muted-foreground text-sm">All Boards (0)</h4>
                         <span>Loading Boards</span>
@@ -63,7 +63,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
                         </span>
                     </div>
-                    <button class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-primary border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs">Hide Sidebar</button>
+                    <button onclick="document.getElementById('sidenav').classList.toggle('hidden')" class="inline-flex sm:hidden items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-primary border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs">Hide Sidebar</button>
                 </div>
             </div>
         </div>
