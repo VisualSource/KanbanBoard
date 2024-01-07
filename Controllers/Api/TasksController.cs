@@ -2,6 +2,7 @@ using KanbanBoardMvc.Context;
 using KanbanBoardMvc.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 
 namespace KanbanBoardMvc.Controllers;
 
@@ -22,7 +23,7 @@ public class ApiTasksControllers : Controller
     {
 
         _logger.LogInformation("Task Id: {id}", Id);
-        var task = await _context.Tasks.SingleOrDefaultAsync(e => e.Id == Id);
+        var task = await _context.Tasks.Where(e => e.Id == Id).Include(e => e.SubTasks).SingleOrDefaultAsync();
 
         if (task is null)
         {
@@ -36,7 +37,7 @@ public class ApiTasksControllers : Controller
     public async Task<IActionResult> GetEditForm([FromQuery] Guid Id)
     {
         _logger.LogInformation("Task Id: {id}", Id);
-        var task = await _context.Tasks.SingleOrDefaultAsync(e => e.Id == Id);
+        var task = await _context.Tasks.Where(e => e.Id == Id).Include(e => e.SubTasks).SingleOrDefaultAsync();
 
         if (task is null)
         {
@@ -49,15 +50,24 @@ public class ApiTasksControllers : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateTask([Bind("Title,Description,StatusId")] TaskModel Model)
+    public async Task<IActionResult> CreateTask([Bind("Id,Title,Description,StatusId,SubTasks")] TaskModel Model)
     {
         Model.Id = new Guid();
+        Model.SubtaskCount = Model.SubTasks.Count();
         await _context.Tasks.AddAsync(Model);
+
+        foreach (var subtask in Model.SubTasks)
+        {
+            subtask.Id = Guid.NewGuid();
+            subtask.TaskId = Model.Id;
+        }
+
         await _context.SaveChangesAsync();
 
-        var status = await _context.Status.SingleAsync(e => e.Id == Model.StatusId);
+        _logger.LogInformation("SubTasks: {}", Model.SubTasks.Count());
 
-        await _context.Entry(status).Collection(e => e.Tasks).Query().OrderBy(e => e.Order).ToListAsync();
+        var status = await _context.Status.Where(e => e.Id == Model.StatusId).Include(e => e.Tasks.OrderBy(e => e.Order)).SingleAsync();
+
         return View("~/Views/Api/Column.cshtml", status);
     }
 
@@ -70,15 +80,14 @@ public class ApiTasksControllers : Controller
 
         await _context.SaveChangesAsync();
 
-        var status = await _context.Status.SingleAsync(e => e.Id == task.StatusId);
-        await _context.Entry(status).Collection(e => e.Tasks).Query().OrderBy(e => e.Order).ToListAsync();
+        var status = await _context.Status.Where(e => e.Id == task.StatusId).Include(e => e.Tasks.OrderBy(e => e.Order)).SingleAsync();
 
         return View("~/Views/Api/Column.cshtml", status);
     }
 
     [HttpPatch]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> PatchTask([Bind("Title,Id,Description")] TaskModel Model)
+    public async Task<IActionResult> PatchTask([Bind("Title,Id,Description,SubTasks")] TaskModel Model)
     {
         var task = await _context.Tasks.SingleOrDefaultAsync(e => e.Id == Model.Id);
 
@@ -92,10 +101,26 @@ public class ApiTasksControllers : Controller
 
         _context.Entry(task).State = EntityState.Modified;
 
+        foreach (var item in Model.SubTasks)
+        {
+            if (item.Id == Guid.Empty)
+            {
+                item.Id = Guid.NewGuid();
+                item.TaskId = task.Id;
+                await _context.SubTasks.AddAsync(item);
+            }
+            else
+            {
+                var c = await _context.SubTasks.SingleOrDefaultAsync(e => e.Id == item.Id);
+                if (c is null) continue;
+                c.Title = item.Title;
+                _context.Entry(c).State = EntityState.Modified;
+            }
+        }
+
         await _context.SaveChangesAsync();
 
-        var status = await _context.Status.SingleAsync(e => e.Id == task.StatusId);
-        await _context.Entry(status).Collection(e => e.Tasks).Query().OrderBy(e => e.Order).ToListAsync();
+        var status = await _context.Status.Where(e => e.Id == task.StatusId).Include(e => e.Tasks.OrderBy(e => e.Order)).SingleAsync();
 
         return View("~/Views/Api/Column.cshtml", status);
     }

@@ -4,29 +4,32 @@
 }
  
 <section id="column-id-@Model.Id" class="flex flex-col cursor-pointer z-0">
+    <input hidden name="Column[@Model.Order]" value="@Model.Id"/>
+    
     <div class="flex justify-between items-center">
         <div class="flex gap-2 items-center py-4">
             <div style="background-color: @Model.Color;" class="h-4 w-4 rounded-full"></div>
             <h4 class="scroll-m-20 text-sm font-semibold tracking-tight uppercase">@Html.DisplayFor(e=>e.Title) (@Model.Tasks.Count())</h4>
         </div>
-        <div class="inline-block relative">
-            <button type="button" hx-on:click="this.nextElementSibling.classList.toggle('hidden');" id="board-ctrl" class="peer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 w-10">
+        <div class="inline-block relative" is="dropdown-menu">
+            <button data-trigger type="button" class="peer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 w-10">
                 <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM10 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM11.5 15.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z"></path></svg>
             </button>
-            <div id="task-dropdown" hx-on:blur="this.classList.toggle('hidden');" class="absolute hidden right-0 z-10 mt-2 w-56 origin-top-right bg-background shadow-lg ring-1 ring-accent ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+            <div data-content class="absolute hidden right-0 z-10 mt-2 w-56 origin-top-right bg-background shadow-lg ring-1 ring-accent ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
                 <div class="py-1" role="none">
-                    <button hx-delete="/api/columns?id=@Model.Id" hx-confirm="Are you sure you wish to delete this column" hx-on::after-request="document.getElementById('column-id-@Model.Id').remove();" class="text-foreground block px-4 py-2 text-sm" role="menuitem" tabindex="-1">Delete Column</button>
+                    <button hx-delete="/api/columns?id=@Model.Id" hx-confirm="Are you sure you wish to delete this column" hx-on::after-request="document.getElementById('column-id-@Model.Id').remove();window.dispatchEvent(new CustomEvent('update-columns'));" class="text-foreground block px-4 py-2 text-sm" role="menuitem" tabindex="-1">Delete Column</button>
                 </div>
             </div>
         </div>
     </div>
-    <ul data-group-name="task-group" class="space-y-4 w-72 sortable" class="flex flex-col">
-        @foreach(var card in @Model.Tasks) {
-            <li onclick="" card-id="@card.Id.ToString()" class="rounded-lg border bg-card text-card-foreground shadow-sm cursor-pointer">
+    <ul data-group-name="task-group" class="space-y-4 w-72 sortable h-full" hx-patch="/api/list/tasks" hx-trigger="end consume">
+        @for(var j = 0; j < @Model.Tasks.Count(); j++) {
+            <li hx-ext="response-targets" hx-indicator="#ivd-indicator" hx-target-5="#ivd-server-error" hx-target-4="#ivd-client-error" hx-get="/api/tasks/@Model.Tasks[j].Id" hx-target="#task-view-content" onclick="showModel('item-view-dialog')" card-id="@Model.Tasks[j].Id.ToString()" class="cursor-pointer rounded-lg border bg-card text-card-foreground shadow-sm">
                 <div class="flex flex-col space-y-1.5 p-6">
-                    <h3 class="font-semibold leading-none tracking-tight">@Html.DisplayFor(e=>card.Title)</h3>
-                    <p class="text-sm text-muted-foreground">@Html.DisplayFor(e=>card.Description)</p>
+                    <h3 class="font-semibold leading-none tracking-tight">@Model.Tasks[j].Title</h3>
+                    <p class="text-sm text-muted-foreground">@Model.Tasks[j].Description</p>
                 </div>
+                <input hidden name="Task[@j]" value="@Model.Tasks[j].Id"/>
             </li>
         }
     </ul>

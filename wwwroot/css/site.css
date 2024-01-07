@@ -445,6 +445,7 @@ video {
 }
 
 :root {
+  color-scheme: light dark;
   --background: 0 0% 100%;
   --foreground: 20 14.3% 4.1%;
   --card: 0 0% 100%;
@@ -638,24 +639,20 @@ body {
   top: 1rem;
 }
 
-.z-10 {
-  z-index: 10;
-}
-
-.z-40 {
-  z-index: 40;
+.-z-50 {
+  z-index: -50;
 }
 
 .z-0 {
   z-index: 0;
 }
 
-.z-50 {
-  z-index: 50;
+.z-10 {
+  z-index: 10;
 }
 
-.-z-50 {
-  z-index: -50;
+.z-50 {
+  z-index: 50;
 }
 
 .mb-2 {
@@ -716,6 +713,10 @@ body {
 
 .h-full {
   height: 100%;
+}
+
+.h-screen {
+  height: 100vh;
 }
 
 .w-10 {
@@ -908,6 +909,10 @@ body {
   background-color: hsl(var(--card));
 }
 
+.bg-destructive {
+  background-color: hsl(var(--destructive));
+}
+
 .bg-primary {
   background-color: hsl(var(--primary));
 }
@@ -970,6 +975,14 @@ body {
   padding-inline-start: 0.75rem;
 }
 
+.pb-2 {
+  padding-bottom: 0.5rem;
+}
+
+.pb-4 {
+  padding-bottom: 1rem;
+}
+
 .text-center {
   text-align: center;
 }
@@ -994,6 +1007,11 @@ body {
   line-height: 1rem;
 }
 
+.text-4xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+
 .font-medium {
   font-weight: 500;
 }
@@ -1002,12 +1020,20 @@ body {
   font-weight: 600;
 }
 
+.font-extrabold {
+  font-weight: 800;
+}
+
 .uppercase {
   text-transform: uppercase;
 }
 
 .leading-none {
   line-height: 1;
+}
+
+.leading-7 {
+  line-height: 1.75rem;
 }
 
 .tracking-tight {
@@ -1020,6 +1046,10 @@ body {
 
 .text-current {
   color: currentColor;
+}
+
+.text-destructive-foreground {
+  color: hsl(var(--destructive-foreground));
 }
 
 .text-foreground {
@@ -1194,6 +1224,10 @@ body {
 
 .hover\:bg-accent:hover {
   background-color: hsl(var(--accent));
+}
+
+.hover\:bg-destructive\/90:hover {
+  background-color: hsl(var(--destructive) / 0.9);
 }
 
 .hover\:bg-primary\/90:hover {
@@ -1386,6 +1420,17 @@ body {
   .md\:flex {
     display: flex;
   }
+}
+
+@media (min-width: 1024px) {
+  .lg\:text-5xl {
+    font-size: 3rem;
+    line-height: 1;
+  }
+}
+
+.\[\&\:not\(\:first-child\)\]\:mt-6:not(:first-child) {
+  margin-top: 1.5rem;
 }
 
 .\[\&\>span\]\:line-clamp-1>span {

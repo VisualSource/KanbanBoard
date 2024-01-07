@@ -19,6 +19,12 @@ public class KanbanDbContext : DbContext
         .HasForeignKey(e => e.StatusId)
         .IsRequired();
 
+        modelBuilder.Entity<Models.TaskModel>()
+        .HasMany(e => e.SubTasks)
+        .WithOne(e => e.Task)
+        .HasForeignKey(e => e.TaskId)
+        .IsRequired();
+
         modelBuilder.Entity<Models.BoardModel>().HasData(
             new Models.BoardModel
             {
@@ -37,4 +43,5 @@ public class KanbanDbContext : DbContext
     public DbSet<Models.BoardModel> Boards { get; set; }
     public DbSet<Models.StatusModel> Status { get; set; }
     public DbSet<Models.TaskModel> Tasks { get; set; }
+    public DbSet<Models.SubTaskModel> SubTasks { get; set; }
 }

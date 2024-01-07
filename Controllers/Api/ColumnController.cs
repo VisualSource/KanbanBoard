@@ -17,6 +17,15 @@ public class ApiColumnControllers : Controller
         _logger = logger;
     }
 
+    [HttpGet("options/{id:guid}")]
+    public async Task<IActionResult> GetColumns(Guid Id)
+    {
+
+        var items = await _context.Status.Where(e => e.BoardId == Id).ToListAsync();
+
+        return View("~/Views/Api/Options.cshtml", items);
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateTask([Bind("Title,Color,BoardId")] StatusModel Model)

@@ -1,0 +1,8 @@
+@model IEnumerable<KanbanBoardMvc.Models.StatusModel>
+@{
+    Layout = "_EmptyLayout";
+}
+
+@foreach(var item in Model){
+    <option value="@item.Id">@item.Title</option>
+}

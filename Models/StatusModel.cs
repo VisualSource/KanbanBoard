@@ -15,5 +15,5 @@ public class StatusModel
     [JsonIgnore]
     public BoardModel Board { get; init; } = null!;
 
-    public ICollection<TaskModel> Tasks { get; set; } = new List<TaskModel>();
+    public IList<TaskModel> Tasks { get; set; } = new List<TaskModel>();
 }

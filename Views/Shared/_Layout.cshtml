@@ -6,13 +6,13 @@
     <title>@ViewData["Title"]</title>
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="white"/>
     <meta name="theme-color" media="(prefers-color-schema: dark)" content="black"/>
+    <meta name="color-scheme" content="dark light">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/KanbanBoardMvc.styles.css" asp-append-version="true" />
     <link rel="icon" type="image/png" href="~/favicon.png" />
 </head>
 <body>
 
-  <dialog hx-ext="response-targets" id="add-board-dialog" class="backdrop:bg-black/80 backdrop:open:animate-in backdrop:open:fade-in-0 open:animate-in open:grid w-full max-w-lg gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg">
+  <dialog hx-on:click="event.target === this && closeModel(this);" hx-ext="response-targets" id="add-board-dialog" class="backdrop:bg-black/80 backdrop:open:animate-in backdrop:open:fade-in-0 open:animate-in open:grid w-full max-w-lg gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg">
         <form method="dialog">
             <button value="cancel" formmethod="dialog" class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
                 X
@@ -24,7 +24,7 @@
             <div class="flex flex-col py-4">
                 <div>
                     <label for="board-props-title" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Column Title</label>
-                    <input name="Title" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" id="column-props-title" type="text"/>
+                    <input placeholder="Board name" name="Title" class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" id="column-props-title" type="text"/>
                 </div>
             </div>
             <div id="abd-server-error"></div>
@@ -40,24 +40,28 @@
         <div class="sm:w-64 sm:h-screen sm:sticky sm:top-0 border-r border-accent shadow" data-permanent>
             <div class="top-row ps-3 navbar h-20">
                 <div class="flex items-center h-full">
-                    <a class="scroll-m-20 text-3xl font-semibold tracking-tight" href="">KanbanBoard</a>
+                    <a class="scroll-m-20 text-3xl font-semibold tracking-tight" href="/">KanbanBoard</a>
                 </div>
             </div>
             <div id="nav-scrollable" class="hidden sm:overflow-y-auto sm:h-[calc(100vh-5rem)] sm:flex flex-col justify-between h-full">
                 <nav class="flex-column space-y-2 container">
                     <div id="board-nav" class="flex flex-col gap-2" hx-trigger="load" hx-get="/api/boards">
-                        <h4 class="uppercase text-muted-foreground text-sm">All Boards ()</h4>
+                        <h4 class="uppercase text-muted-foreground text-sm">All Boards (0)</h4>
                         <span>Loading Boards</span>
                     </div>
-                    <button onclick="document.getElementById('add-board-dialog').showModal()" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 w-full">Add Board</button>
+                    <button onclick="showModel('add-board-dialog')" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 w-full">Add Board</button>
                 </nav>
                 <div class="p-2 flex flex-col">
                     <div class="flex gap-2 p-2 items-center justify-center w-full">
-                        <span class="pr-2">L</span>
+                        <span class="pr-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                        </span>
                         <button onclick="checkToggle([this,this.firstElementChild],()=>document.body.classList.toggle('dark'))" id="theme-switch" type="button" role="switch" aria-checked="false" data-state="unchecked" value="on" class="peer inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input">
                             <span data-state="unchecked" class="pointer-events-none block h-4 w-4 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0"></span>
                         </button>
-                        <span class="pl-2">D</span>
+                        <span class="pl-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                        </span>
                     </div>
                     <button class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-primary border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs">Hide Sidebar</button>
                 </div>
@@ -69,7 +73,6 @@
     </div>
 
     <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
     <script src="https://unpkg.com/htmx.org/dist/ext/response-targets.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
